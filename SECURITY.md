@@ -14,6 +14,10 @@ skillspector scan skills/pg-inspect --baseline .skillspector-baseline.yaml
 
 ## Accepted findings
 
+`E2` appears twice because the script opens two psql sessions (one header-aware, one
+tuples-only) and both pass the parent's libpq environment to the child. `AST4` is the
+`subprocess.run` call itself: fixed argv list, no `shell=True`, no interpolation.
+
 | Rule | Severity | File | Why acceptable |
 | --- | --- | --- | --- |
 | E2 | HIGH | `pg.py:95` | The child `psql` needs the parent's libpq environment (PGPASSWORD/PGHOST); nothing is logged and connection strings are masked. |
