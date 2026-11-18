@@ -2,5 +2,9 @@
   "name": "pg-inspect",
   "version": "0.1.0",
   "description": "Read-only Postgres inspection: tables, schema, ad-hoc SELECT, EXPLAIN, migrations, locks, sizes \u2014 safe against production.",
-  "skills": "./skills"
+  "skills": "./skills",
+  "author": {
+    "name": "Ibrahim M. Badr",
+    "url": "https://github.com/ibrahimbdr"
+  }
 }
