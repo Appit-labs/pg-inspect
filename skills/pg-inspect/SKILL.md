@@ -37,24 +37,36 @@ SKILL_DIR=~/.claude/skills/pg-inspect     # or ~/.codex/skills/…, ~/.pi/agent/
 
 | Need | Command |
 | --- | --- |
-| what tables exist, and which are big | `tables [--schema=public]` |
-| columns, types, defaults, indexes | `schema users` |
+| the 10-second picture: size, tables, busiest, waits | `overview` |
+| what exists and how big, with bars | `tables [--schema=public]` |
+| columns, types, defaults, indexes, constraints, FKs | `schema orders` |
+| copy-pasteable `CREATE TABLE` + indexes | `ddl orders` |
+| the join graph | `fk` |
+| a few real rows | `sample orders --limit=5` |
+| one query | `q "select status, count(*) from orders group by 1"` |
+| plan tree, cost bars, warnings | `explain "select …"` |
+| worst queries by total time | `slow --limit=10` (`pg_stat_statements`) |
+| biggest relations, with bars | `sizes --limit=15` |
+| who blocks whom | `locks` |
+| connection states | `activity` |
+| migration tool state | `migrations` |
 | find a table or column by name | `search invoice` |
-| one query | `q "select status, count(*) from jobs group by 1"` |
-| why is this slow | `explain "select ..."` |
-| are migrations applied | `migrations` |
-| disk hogs | `sizes --limit=15` |
-| what is blocking | `locks` |
-| connection counts | `activity` |
 | what would I connect to (masked) | `doctor` |
+| machine-readable, for a script | any command with `--json` |
 
 Connection comes from `--url postgres://…`, else `$DATABASE_URL`, else libpq
 `PG*` variables. Passwords are masked everywhere they are printed.
 
 ## How to use it well
 
-- `tables` and `schema` first, `q` second. Writing SQL against guessed column
-  names is the most common wasted round trip in this kind of work.
+- `overview` then `schema` then `q`. Writing SQL against guessed column names is
+  the most common wasted round trip in this kind of work.
+- `explain` is plan-only (no ANALYZE), so it is safe on production; read the
+  `hot paths` block first, then the tree. Warnings flag seq scans on big row
+  estimates, filters that discard most rows, and sorts spilling to disk.
+- Output is a box table with aligned numbers and a `— rows · ms` footer. Colour is
+  used only on a TTY; set `NO_COLOR=1` to force plain text, or `--json` when a
+  script (not a human) is reading.
 - Ask narrow questions. `q` prints raw psql output (`|` separated, no pager), so
   `select ... limit 20` beats a wide dump: the output lands in your context and
   every row costs tokens.

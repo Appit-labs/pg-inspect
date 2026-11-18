@@ -6,6 +6,7 @@
   <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-MIT-3DA639?style=flat-square"></a>
   <img alt="agents" src="https://img.shields.io/badge/works%20in-pi%20%7C%20Claude%20Code%20%7C%20Codex%20%7C%20Cursor-4B5563?style=flat-square">
   <img alt="skillspector" src="https://img.shields.io/badge/SkillSpector-0%2F100%20SAFE-2EA043?style=flat-square">
+  <img alt="commands" src="https://img.shields.io/badge/commands-13%20read--only-1F6FEB?style=flat-square">
   <img alt="cost" src="https://img.shields.io/badge/session%20cost-~95%20tok-6E7681?style=flat-square">
 </p>
 
@@ -15,10 +16,22 @@
 
 ## What it is
 
-`pg-inspect` is a **one-command window into a Postgres database** for an agent that needs to
-know what the data looks like before it writes SQL or code: list tables with sizes, show a table's
-columns and indexes, run a single SELECT, explain a plan without executing it, check which migrations
-have been applied, and see what is blocked or what is eating disk.
+`pg-inspect` is a **read-only window into a Postgres database**, in one command per question:
+
+- **`overview`** — size, table count, live rows, busiest tables, any lock waits. The ten-second picture.
+- **`tables`** — every table with row counts, human sizes and a bar, so the big one is obvious.
+- **`schema orders`** — columns, types, defaults, indexes, constraints and foreign keys, in one call.
+- **`ddl orders`** — a copy-pasteable `CREATE TABLE` plus its indexes, for reproducing the shape elsewhere.
+- **`fk`** — the join graph as text: `orders.customer_id → customers.id`.
+- **`sample orders`** — a few real rows, so an agent stops guessing what is in a column.
+- **`q "select …"`** — one guarded read statement, box table, `— rows · ms` footer.
+- **`explain "select …"`** — the plan as an indented tree with cost bars and warnings (seq scan on a big
+  estimate, a filter discarding most rows, a sort spilling to disk). Plans only, never executes.
+- **`slow`** — worst queries from `pg_stat_statements`, by total time.
+- **`sizes`**, **`locks`** (who blocks whom, as a tree), **`activity`**, **`migrations`**, **`search`**.
+- **`--json`** on any of them, for when a script is reading instead of a human.
+
+Colour is used only on a TTY (`NO_COLOR=1` to disable), so logs and transcripts stay clean.
 
 ## The problem it removes
 

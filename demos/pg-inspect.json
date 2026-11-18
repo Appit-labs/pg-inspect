@@ -3,48 +3,70 @@
   "prompt": "you@laptop:~/shop",
   "steps": [
     {
-      "cmd": "pg.py tables",
-      "phase": "look first",
-      "note": "what exists, how big \u2014 before writing a migration",
+      "cmd": "pg.py overview",
+      "phase": "orient",
+      "note": "one call to see size, rows, busiest tables and any lock waits",
       "out": [
-        "# tables in public",
-        "table | approx_rows | size",
-        "orders | 900 | 168 kB",
-        "customers | 250 | 104 kB",
-        "products | 120 | 48 kB"
+        "database shopdemo \u00b7 PostgreSQL 18.6 (Ubuntu 18.6-1.pgdg24.04+2)",
+        "size     8262 kB \u00b7 3 tables \u00b7 1,270 live rows",
+        "busiest  orders 168 kB, customers 104 kB, products 48 kB",
+        "now      3 connections \u00b7 no lock waits",
+        "\u2014 3 rows \u00b7 116 ms"
+      ]
+    },
+    {
+      "cmd": "pg.py tables",
+      "phase": "look",
+      "note": "what exists and how big \u2014 before writing a migration",
+      "out": [
+        "\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510",
+        "\u2502 table     \u2502 rows \u2502 size     \u2502                      \u2502",
+        "\u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524",
+        "\u2502 orders    \u2502  900 \u2502 168.0 kB \u2502 \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2502",
+        "\u2502 customers \u2502  250 \u2502 104.0 kB \u2502 \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u00b7\u00b7\u00b7\u00b7\u00b7\u00b7\u00b7   \u2502",
+        "\u2502 products  \u2502  120 \u2502  48.0 kB \u2502 \u2588\u2588\u2588\u2588\u2588\u00b7\u00b7\u00b7\u00b7\u00b7\u00b7\u00b7\u00b7\u00b7\u00b7\u00b7\u00b7\u00b7   \u2502",
+        "\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518",
+        "\u2014 public \u00b7 320.0 kB \u00b7 3 rows \u00b7 20 ms"
       ]
     },
     {
       "cmd": "pg.py schema orders",
       "phase": "shape",
-      "note": "columns, types and indexes in one call",
+      "note": "columns, defaults, indexes and foreign keys in one call",
       "out": [
-        "# schema public.orders",
-        "column_name | data_type | is_nullable | default",
-        "id | integer | NO | nextval('orders_id_seq'::regclass)",
-        "customer_id | integer | YES |",
-        "status | text | YES |"
+        "public.orders  5 columns \u00b7 2 indexes",
+        "\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510",
+        "\u2502 column      \u2502 type                     \u2502 null     \u2502 default                            \u2502",
+        "\u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524",
+        "\u2502 id          \u2502 integer                  \u2502 not null \u2502 nextval('orders_id_seq'::regclass) \u2502",
+        "\u2502 customer_id \u2502 integer                  \u2502 null     \u2502                                    \u2502",
+        "\u2502 status      \u2502 text                     \u2502 null     \u2502                                    \u2502",
+        "\u2502 total_cents \u2502 integer                  \u2502 null     \u2502                                    \u2502"
       ]
     },
     {
-      "cmd": "pg.py q \"select status, count(*) from orders group by 1\"",
-      "phase": "read",
-      "note": "the agent runs its own questions instead of guessing columns",
+      "cmd": "pg.py explain \"select * from orders o join customers c on c.id = o.customer_id\"",
+      "phase": "plan",
+      "note": "plan tree with cost bars \u2014 plans only, never executes",
       "out": [
-        "status | count",
-        "paid | 225",
-        "refunded | 225",
-        "shipped | 225",
-        "new | 225",
-        "(4 rows)"
+        "plan  (EXPLAIN, not executed)  total cost 26",
+        "Hash Join (Inner)  cost 26 \u00b7 rows 900",
+        "  Seq Scan on orders  cost 16 \u00b7 rows 900",
+        "  Hash  cost 4 \u00b7 rows 250",
+        "    Seq Scan on customers  cost 4 \u00b7 rows 250",
+        "",
+        "hot paths  by estimated cost",
+        "  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588       26  Hash Join",
+        "  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u00b7\u00b7\u00b7\u00b7\u00b7\u00b7\u00b7       16    Seq Scan on orders"
       ]
     },
     {
       "cmd": "pg.py q \"drop table orders\"",
-      "phase": "the guarantee",
+      "phase": "guarantee",
       "note": "and it cannot write, even if the model tries",
       "out": [
-        "refused: only read statements (select, with, table, values, explain, show) are allowed"
+        "Traceback (most recent call last):",
+        "  File \"/home/ibadr/.pi/agent/skills/pg-inspect/scripts/pg.py\", line 740, in <module>"
       ]
     }
   ]
