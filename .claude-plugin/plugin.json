@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "description": "Read-only Postgres inspection: tables, schema, ad-hoc SELECT, EXPLAIN, migrations, locks, sizes \u2014 safe against production.",
   "author": {
-    "name": "Ibrahim M. Badr",
-    "url": "https://github.com/ibrahimbdr"
+    "name": "Appit Labs",
+    "url": "https://github.com/Appit-labs"
   },
-  "homepage": "https://github.com/ibrahimbdr/pg-inspect",
+  "homepage": "https://github.com/Appit-labs/pg-inspect",
   "license": "MIT",
   "skills": "./skills"
 }
