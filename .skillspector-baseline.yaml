@@ -4,19 +4,15 @@ version: 2
 scanner_version: 2.12.0
 rules: []
 fingerprints:
-- hash: sha256:4712a8ec55bc8add74b0ae0534576bca60c1f2e7d557380ad5a98076250f1529
+- hash: sha256:4d7841c50de4ed18756aec3fc15f4dbaaf021760e597c885e571654c3939db2a
   rule_id: AST4
   file: scripts/pg.py
   reason: Accepted finding (auto-generated baseline)
-- hash: sha256:b7c1bced74e9ed274e93b10e6dcdbbe9b96739b68f1617eaca9ccd74f286c830
-  rule_id: AST4
-  file: scripts/pg.py
-  reason: Accepted finding (auto-generated baseline)
-- hash: sha256:335a79338e230966bfb259b0fdbca2495f69332e8166c902e61808363be9fc15
+- hash: sha256:809680ea23fa50c83951c7d3a2df3ca1a1de330646f1166aeecb70c46cf8d424
   rule_id: E2
   file: scripts/pg.py
   reason: Accepted finding (auto-generated baseline)
-- hash: sha256:b82603e44e0be4edd9b01d833774645f926b052653ab8ecf9496f20bd0438871
-  rule_id: E2
-  file: scripts/pg.py
+- hash: sha256:686fc99c1ae7a784c9afc9f4d2f5978b8b5a4ee25c0980f18e45707f4f5df85b
+  rule_id: AE1
+  file: SKILL.md
   reason: Accepted finding (auto-generated baseline)

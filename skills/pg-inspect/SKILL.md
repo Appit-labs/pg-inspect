@@ -37,30 +37,44 @@ SKILL_DIR=~/.claude/skills/pg-inspect     # or ~/.codex/skills/…, ~/.pi/agent/
 
 | Need | Command |
 | --- | --- |
-| the 10-second picture: size, tables, busiest, waits | `overview` |
-| what exists and how big, with bars | `tables [--schema=public]` |
-| columns, types, defaults, indexes, constraints, FKs | `schema orders` |
-| copy-pasteable `CREATE TABLE` + indexes | `ddl orders` |
+| the ten-second picture | `overview` |
+| tables with sizes, bars, dead tuples | `tables [--schema=public] [--like=ord]` |
+| columns, defaults, indexes, constraints, FKs | `schema orders` |
+| copy-pasteable DDL | `ddl orders` |
+| entity diagram (mermaid or terminal) | `erd` · `erd --md` |
+| schema hash, and drift between two envs | `fingerprint` · `fingerprint --against postgres://staging/…` |
 | the join graph | `fk` |
+| per-column nulls, distinct, most-common values | `profile orders` |
 | a few real rows | `sample orders --limit=5` |
 | one query | `q "select status, count(*) from orders group by 1"` |
 | plan tree, cost bars, warnings | `explain "select …"` |
-| worst queries by total time | `slow --limit=10` (`pg_stat_statements`) |
-| biggest relations, with bars | `sizes --limit=15` |
-| who blocks whom | `locks` |
-| connection states | `activity` |
+| slowest queries by total or mean time | `slow --by=total|mean` |
+| sessions stuck in a query | `long-running --minutes=5` |
+| **everything below, prioritised** | **`audit`** |
+| index health: size, scans, unused, duplicates, invalid | `indexes` · `unused-indexes` · `duplicate-indexes` |
+| foreign keys with no supporting index | `missing-fk-indexes` |
+| dead tuples and wasted bytes | `bloat` · `vacuum` |
+| tables scanned more than indexed | `seq-scans` |
+| hit ratios, temp spill, deadlocks | `cache` |
+| transaction-ID age (wraparound) | `xid` |
+| sequences near exhaustion | `sequences` |
+| replicas and lag | `replication` |
+| who is connected, vs max_connections | `connections` |
+| privileges per table, RLS coverage | `grants orders` · `rls` |
+| blocking tree / connection states | `locks` · `activity` |
+| biggest relations | `sizes --limit=15` |
 | migration tool state | `migrations` |
 | find a table or column by name | `search invoice` |
-| what would I connect to (masked) | `doctor` |
-| machine-readable, for a script | any command with `--json` |
-
-Connection comes from `--url postgres://…`, else `$DATABASE_URL`, else libpq
-`PG*` variables. Passwords are masked everywhere they are printed.
+| machine-readable | any command with `--json`, `--csv` or `--md` |
 
 ## How to use it well
 
+- `overview` → `audit` → the specific command. `audit` is the cheapest way to find
+  out whether anything is wrong before you start reading tables.
 - `overview` then `schema` then `q`. Writing SQL against guessed column names is
   the most common wasted round trip in this kind of work.
+- `erd --md` pastes a mermaid diagram straight into a PR or a doc; `fingerprint
+  --against` tells you whether staging and prod have drifted without dumping either.
 - `explain` is plan-only (no ANALYZE), so it is safe on production; read the
   `hot paths` block first, then the tree. Warnings flag seq scans on big row
   estimates, filters that discard most rows, and sorts spilling to disk.

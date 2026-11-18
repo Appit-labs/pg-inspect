@@ -6,7 +6,7 @@
   <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-MIT-3DA639?style=flat-square"></a>
   <img alt="agents" src="https://img.shields.io/badge/works%20in-pi%20%7C%20Claude%20Code%20%7C%20Codex%20%7C%20Cursor-4B5563?style=flat-square">
   <img alt="skillspector" src="https://img.shields.io/badge/SkillSpector-0%2F100%20SAFE-2EA043?style=flat-square">
-  <img alt="commands" src="https://img.shields.io/badge/commands-13%20read--only-1F6FEB?style=flat-square">
+  <img alt="commands" src="https://img.shields.io/badge/commands-34%20read--only-1F6FEB?style=flat-square">
   <img alt="cost" src="https://img.shields.io/badge/session%20cost-~95%20tok-6E7681?style=flat-square">
 </p>
 
@@ -16,22 +16,37 @@
 
 ## What it is
 
-`pg-inspect` is a **read-only window into a Postgres database**, in one command per question:
+`pg-inspect` is a **read-only Postgres inspector with 34 commands**, in one call per question.
 
-- **`overview`** — size, table count, live rows, busiest tables, any lock waits. The ten-second picture.
-- **`tables`** — every table with row counts, human sizes and a bar, so the big one is obvious.
-- **`schema orders`** — columns, types, defaults, indexes, constraints and foreign keys, in one call.
-- **`ddl orders`** — a copy-pasteable `CREATE TABLE` plus its indexes, for reproducing the shape elsewhere.
-- **`fk`** — the join graph as text: `orders.customer_id → customers.id`.
-- **`sample orders`** — a few real rows, so an agent stops guessing what is in a column.
-- **`q "select …"`** — one guarded read statement, box table, `— rows · ms` footer.
-- **`explain "select …"`** — the plan as an indented tree with cost bars and warnings (seq scan on a big
-  estimate, a filter discarding most rows, a sort spilling to disk). Plans only, never executes.
-- **`slow`** — worst queries from `pg_stat_statements`, by total time.
-- **`sizes`**, **`locks`** (who blocks whom, as a tree), **`activity`**, **`migrations`**, **`search`**.
-- **`--json`** on any of them, for when a script is reading instead of a human.
+**Start with `audit`** — it runs every health check and prints one prioritised report: unused indexes,
+foreign keys with no supporting index, dead-tuple bloat, transaction-ID age, sequences near exhaustion,
+lock waits, connection pressure, missing `pg_stat_statements`.
 
-Colour is used only on a TTY (`NO_COLOR=1` to disable), so logs and transcripts stay clean.
+Then ask for what you need:
+
+| Group | Commands |
+| --- | --- |
+| **Shape** | `overview` · `tables` (sizes, bars, dead tuples, scan counters) · `schema orders` · `ddl orders` · `erd` (mermaid or terminal) · `fk` · `profile orders` (nulls, distinct, most-common values) · `sample orders` |
+| **Drift** | `fingerprint` — a schema hash · `fingerprint --against postgres://staging/…` — exactly what differs, without dumping either database |
+| **Queries** | `q "select …"` · `explain "select …"` (plan tree, cost bars, warnings — never executes) · `slow --by=total|mean` · `long-running --minutes=5` |
+| **Indexes** | `indexes` (size, scans, unused, duplicates, invalid) · `unused-indexes` · `duplicate-indexes` · `missing-fk-indexes` |
+| **Health** | `audit` · `bloat` · `vacuum` · `seq-scans` · `cache` (hit ratios, temp spill, deadlocks) · `xid` · `sequences` · `replication` · `connections` |
+| **Safety & ops** | `grants orders` · `rls` · `locks` (blocking tree) · `activity` · `sizes` · `migrations` · `search invoice` · `doctor` |
+
+Every command takes `--json`, `--csv` or `--md` (so it can feed a script, a spreadsheet or a PR).
+Output is a box table with aligned numbers, human sizes, magnitude bars and a `— rows · ms` footer;
+colour appears only on a TTY (`NO_COLOR=1` to disable), so logs stay clean.
+
+```bash
+$ pg.py audit
+audit  0 critical · 2 warn · 1 info
+  WARN  unused index products.products_name_unused_idx
+        16.0 kB, never scanned
+  WARN  foreign key without index: order_notes(order_id)
+        references orders; deletes scan the child
+  INFO  pg_stat_statements missing
+        install it to enable `slow` and query-level triage
+```
 
 ## The problem it removes
 

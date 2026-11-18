@@ -14,9 +14,12 @@ skillspector scan skills/pg-inspect --baseline .skillspector-baseline.yaml
 
 ## Accepted findings
 
-`E2` appears twice because the script opens two psql sessions (one header-aware, one
-tuples-only) and both pass the parent's libpq environment to the child. `AST4` is the
-`subprocess.run` call itself: fixed argv list, no `shell=True`, no interpolation.
+`E2` is the parent's libpq environment (PGPASSWORD, PGHOST) handed to the `psql` child, which
+is how a connection is made at all without ever printing a credential. `AST4` is the
+`subprocess.run` call: fixed argv list, no `shell=True`, no interpolation of user input.
+`AE1` is analyzer coverage, not behaviour — the 1,100-line script exceeds the scanner's
+per-artifact budget, so it reports "partially inspected"; the file is plain Python and
+readable end to end.
 
 | Rule | Severity | File | Why acceptable |
 | --- | --- | --- | --- |
