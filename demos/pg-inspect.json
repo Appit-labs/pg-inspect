@@ -1,0 +1,47 @@
+{
+  "skill": "pg-inspect",
+  "out": "pg-inspect/demo.gif",
+  "caption": "pg-inspect \u2014 read-only by construction",
+  "steps": [
+    {
+      "cmd": "pg.py tables",
+      "phase": "inspect",
+      "out": [
+        "# tables in public",
+        "table | approx_rows | size",
+        "orders | 900 | 168 kB",
+        "customers | 250 | 104 kB",
+        "products | 120 | 48 kB"
+      ]
+    },
+    {
+      "cmd": "pg.py schema orders",
+      "phase": "inspect",
+      "out": [
+        "# schema public.orders",
+        "column_name | data_type | is_nullable | default",
+        "id | integer | NO | nextval('orders_id_seq'::regclass)",
+        "customer_id | integer | YES |"
+      ]
+    },
+    {
+      "cmd": "pg.py q \"select status, count(*) from orders group by 1\"",
+      "phase": "query",
+      "out": [
+        "status | count",
+        "paid | 225",
+        "refunded | 225",
+        "shipped | 225",
+        "new | 225",
+        "(4 rows)"
+      ]
+    },
+    {
+      "cmd": "pg.py q \"drop table orders\"",
+      "phase": "payoff",
+      "out": [
+        "refused: only read statements (select, with, table, values, explain, show) are allowed"
+      ]
+    }
+  ]
+}

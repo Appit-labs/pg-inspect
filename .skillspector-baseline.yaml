@@ -1,0 +1,14 @@
+# SkillSpector baseline — findings listed here are suppressed on future scans.
+# Edit 'reason' fields and add glob 'rules' as needed. See docs/SUPPRESSION.md.
+version: 2
+scanner_version: 2.12.0
+rules: []
+fingerprints:
+- hash: sha256:92efd213543848118ee16c46d1e6c4cf6560e4c19c6bc0e4b43c49ea1c2da1ef
+  rule_id: AST4
+  file: scripts/pg.py
+  reason: Accepted finding (auto-generated baseline)
+- hash: sha256:70570cfc9abd04d4c49fbdca1d08e6733a094854ec83d95af22abe404fa20186
+  rule_id: E2
+  file: scripts/pg.py
+  reason: Accepted finding (auto-generated baseline)

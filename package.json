@@ -1,0 +1,27 @@
+{
+  "name": "pg-inspect",
+  "version": "0.1.0",
+  "description": "Read-only Postgres inspection: tables, schema, ad-hoc SELECT, EXPLAIN, migrations, locks, sizes \u2014 safe against production.",
+  "license": "MIT",
+  "keywords": [
+    "agent-skill",
+    "pi-package",
+    "claude-code-plugin",
+    "codex-skill"
+  ],
+  "pi": {
+    "skills": [
+      "./skills"
+    ]
+  },
+  "files": [
+    "skills",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ibrahimbdr/pg-inspect.git"
+  }
+}
