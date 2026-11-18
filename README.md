@@ -6,19 +6,31 @@
   <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-MIT-3DA639?style=flat-square"></a>
   <img alt="agents" src="https://img.shields.io/badge/works%20in-pi%20%7C%20Claude%20Code%20%7C%20Codex%20%7C%20Cursor-4B5563?style=flat-square">
   <img alt="skillspector" src="https://img.shields.io/badge/SkillSpector-0%2F100%20SAFE-2EA043?style=flat-square">
-  <img alt="tokens" src="https://img.shields.io/badge/session%20cost-~95%20tok-6E7681?style=flat-square">
+  <img alt="cost" src="https://img.shields.io/badge/session%20cost-~95%20tok-6E7681?style=flat-square">
 </p>
 
 <p align="center">
-  <img alt="pg-inspect demo" src="skills/pg-inspect/assets/demo.gif" width="820">
+  <img alt="pg-inspect demo — real run, regenerable from demos/pg-inspect.json" src="skills/pg-inspect/assets/demo.gif" width="900">
 </p>
+
+## What it is
+
+`pg-inspect` is a **one-command window into a Postgres database** for an agent that needs to
+know what the data looks like before it writes SQL or code: list tables with sizes, show a table's
+columns and indexes, run a single SELECT, explain a plan without executing it, check which migrations
+have been applied, and see what is blocked or what is eating disk.
+
+## The problem it removes
+
+Without it, every session retypes
+`PGPASSWORD=… psql -h … -U … -d … -c "…"` and parses whatever comes back — 1,115 times in the history
+this came from. That is slow, ugly, and one typo away from a write on production. Here the connection
+comes from `DATABASE_URL` or libpq env vars and the write path does not exist.
 
 ## Install
 
-One command for each agent — the skill is plain Markdown plus a script, so nothing is coupled to one ecosystem.
-
 ```bash
-# Claude Code (plugin, stays updatable)
+# Claude Code — the whole collection as one marketplace
 claude plugin marketplace add Appit-labs/appit-skills
 claude plugin install pg-inspect@appit-skills
 
@@ -30,16 +42,17 @@ git clone git@github.com:Appit-labs/pg-inspect.git
 cp -r pg-inspect/skills/pg-inspect ~/.claude/skills/      # or ~/.codex/skills/, .cursor/skills/, …
 ```
 
-## Why this exists
-
-Retyping `PGPASSWORD=… psql -h … -U … -d … -c …` is the least valuable habit in agent work, and it is one typo away from a write. This is the one-command version, safe against production.
-
 ## Use
 
-- Shape of the data: `scripts/pg.py tables` · `schema users` · `search invoice`
-- Query: `scripts/pg.py q "select status, count(*) from jobs group by 1"`
-- Plan: `scripts/pg.py explain "select …"` (plans, does not execute)`
-- Health: `migrations` · `locks` · `activity` · `sizes`
+- **Shape of the data** — `scripts/pg.py tables` · `schema orders` · `search invoice`
+- **A question** — `scripts/pg.py q "select status, count(*) from orders group by 1"`
+- **A plan** — `scripts/pg.py explain "select …"` — plans, does not execute
+- **Health** — `migrations` · `locks` · `activity` · `sizes --limit=15`
+
+## What it does not do
+
+- It cannot write: statements are refused before connecting, and the session runs with `default_transaction_read_only=on`.
+- It is not a migration tool — to change data you use yours, deliberately.
 
 ## Requires
 
@@ -47,34 +60,27 @@ Retyping `PGPASSWORD=… psql -h … -U … -d … -c …` is the least valuable
 - A connection: `--url`, `$DATABASE_URL`, or libpq `PGHOST/PGUSER/PGPASSWORD/PGDATABASE`.
 - Python 3.9+ (stdlib only).
 
-## What you get
-
-- Two layers of read-only: statements are refused before connecting unless they are a single SELECT/WITH/TABLE/EXPLAIN, and psql runs with `default_transaction_read_only=on` plus a 15 s `statement_timeout`.
-- Passwords are masked in every printed connection string.
-- `self-test` asserts the guard against nine write statements and seven legitimate reads.
-
 ## Cost
 
 | | tokens |
 | --- | --- |
-| always-on (the description, every session) | ~95 |
+| always-on — the description, paid every session | ~95 |
 | on invoke | ~0.7k |
 
-The demo above is regenerated from a real run: `demos/pg-inspect.json` holds the captured
-output, `tools/make_demo.py` renders it. No invented screenshots.
+The demo above is not a mockup: `demos/pg-inspect.json` holds the captured run and
+`tools/make_demo.py` renders it, so it can be regenerated and audited.
 
 ## Security
 
-Static analysis with SkillSpector: **0/100, SAFE, 0 open findings** against the committed
-baseline. Every accepted finding is listed with its reason in [SECURITY.md](SECURITY.md).
-The skill never uses `shell=True`, never reads or stores a credential, and never chooses a
-network destination at runtime.
+SkillSpector: **0/100, SAFE, 0 open findings** against the committed baseline. Every accepted
+finding is listed with its reason in [SECURITY.md](SECURITY.md). No `shell=True`, no credential
+storage, no network destination chosen at runtime.
 
 ## Part of the Appit collection
 
-Browser QA · CI triage · Postgres · runbooks · SSH · Trello · cloud browsers · OpenDesign · Blender —
-one marketplace: [appit-skills](https://github.com/Appit-labs/appit-skills).
+[appit-skills](https://github.com/Appit-labs/appit-skills) — browser QA · CI triage · Postgres · runbooks ·
+SSH · Trello · cloud browsers · OpenDesign · Blender.
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT, copyright Appit Labs. See [LICENSE](LICENSE).

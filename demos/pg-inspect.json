@@ -1,11 +1,11 @@
 {
   "skill": "pg-inspect",
-  "out": "pg-inspect/demo.gif",
-  "caption": "pg-inspect \u2014 read-only by construction",
+  "prompt": "you@laptop:~/shop",
   "steps": [
     {
       "cmd": "pg.py tables",
-      "phase": "inspect",
+      "phase": "look first",
+      "note": "what exists, how big \u2014 before writing a migration",
       "out": [
         "# tables in public",
         "table | approx_rows | size",
@@ -16,17 +16,20 @@
     },
     {
       "cmd": "pg.py schema orders",
-      "phase": "inspect",
+      "phase": "shape",
+      "note": "columns, types and indexes in one call",
       "out": [
         "# schema public.orders",
         "column_name | data_type | is_nullable | default",
         "id | integer | NO | nextval('orders_id_seq'::regclass)",
-        "customer_id | integer | YES |"
+        "customer_id | integer | YES |",
+        "status | text | YES |"
       ]
     },
     {
       "cmd": "pg.py q \"select status, count(*) from orders group by 1\"",
-      "phase": "query",
+      "phase": "read",
+      "note": "the agent runs its own questions instead of guessing columns",
       "out": [
         "status | count",
         "paid | 225",
@@ -38,7 +41,8 @@
     },
     {
       "cmd": "pg.py q \"drop table orders\"",
-      "phase": "payoff",
+      "phase": "the guarantee",
+      "note": "and it cannot write, even if the model tries",
       "out": [
         "refused: only read statements (select, with, table, values, explain, show) are allowed"
       ]
