@@ -8,6 +8,7 @@ permissions:
   - shell
   - env
   - network
+license: MIT
 ---
 
 # Postgres, read-only
@@ -21,6 +22,8 @@ connects — so it is safe against a production URL.
 ```
 python3 "$SKILL_DIR/scripts/pg.py" <command>
 ```
+
+**Not for:** anything that writes — the script refuses non-SELECT before it connects. Designing a schema, or a slow query you cannot find, is a different job: get the SQL from your app's logs first.
 
 ## Portability
 
