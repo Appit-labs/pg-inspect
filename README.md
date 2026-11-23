@@ -58,6 +58,10 @@ comes from `DATABASE_URL` or libpq env vars and the write path does not exist.
 ## Install
 
 ```bash
+# any agent, via the skills CLI — this one, or all twelve at once
+npx skills add Appit-labs/pg-inspect -g -y
+npx skills add Appit-labs/appit-skills -g -y
+
 # Claude Code — the whole collection as one marketplace
 claude plugin marketplace add Appit-labs/appit-skills
 claude plugin install pg-inspect@appit-skills
@@ -112,8 +116,21 @@ storage, no network destination chosen at runtime.
 
 ## Part of the Appit collection
 
-[appit-skills](https://github.com/Appit-labs/appit-skills) — browser QA · CI triage · Postgres · runbooks ·
-SSH · Trello · cloud browsers · OpenDesign · Blender.
+All twelve, one install: `npx skills add Appit-labs/appit-skills -g -y`.
+
+- [`live-qa`](https://github.com/Appit-labs/live-qa) — live QA in a real browser
+- [`ci-triage`](https://github.com/Appit-labs/ci-triage) — red CI to the failing line
+- [`pg-inspect`](https://github.com/Appit-labs/pg-inspect) — read-only Postgres inspection ← this skill
+- [`repo-runbook`](https://github.com/Appit-labs/repo-runbook) — the verified runbook in AGENTS.md
+- [`remote-exec`](https://github.com/Appit-labs/remote-exec) — SSH that cannot hang
+- [`trello-tickets`](https://github.com/Appit-labs/trello-tickets) — seven ticket types, one card
+- [`cloud-browser`](https://github.com/Appit-labs/cloud-browser) — hosted browsers that stop billing
+- [`open-design`](https://github.com/Appit-labs/open-design) — the OpenDesign monorepo
+- [`blender-pipeline`](https://github.com/Appit-labs/blender-pipeline) — Blender via MCP
+- [`code-scan`](https://github.com/Appit-labs/code-scan) — Skylos + Fallow, one gate
+- [`release`](https://github.com/Appit-labs/release) — conventional commits to a tag
+- [`hermes-setup`](https://github.com/Appit-labs/hermes-setup) — least-privilege agent wiring
+
 
 ## License
 
